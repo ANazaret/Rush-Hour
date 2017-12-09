@@ -36,5 +36,9 @@ public class Vehicule {
 		
 	}
 	
+	public String toString() {
+		return "Id: "+this.id + ", (x,y): ("+this.x+","+this.y+")";
+	}
+	
 	
 }

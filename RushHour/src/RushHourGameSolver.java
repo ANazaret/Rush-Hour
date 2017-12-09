@@ -1,3 +1,4 @@
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 
@@ -14,42 +15,7 @@ public class RushHourGameSolver {
 	
 
 	
-	public LinkedList<Movement> available_moves(){
-		/*
-		 * Compute all possible moves from a game state
-		 */
-		
-		LinkedList<Movement> ls= new LinkedList<Movement>();
-		int p,n;
-			
-		for (Vehicule v : game.vList){
-			if(v.orientation==0){
-				p=0;
-				while(v.x+v.length+p<game.size && game.board[v.x+v.length+p][v.y]==-1){
-					p++;
-					ls.add(new Movement(v,p));
-				}
-				n=0;
-				while(v.x-1-n>=0 && game.board[v.x-1-n][v.y]==-1){
-					n++;
-					ls.add(new Movement(v,-n));
-				}			
-			}
-			else{
-				p=0;
-				while(v.y+v.length+p<game.size && game.board[v.x][v.y+v.length+p]==-1){
-					p++;
-					ls.add(new Movement(v,p));
-				}
-				n=0;
-				while(v.y-1-n>=0 && game.board[v.x][v.y-1-n]==-1){
-					n++;
-					ls.add(new Movement(v,-n));
-				}
-			}
-		}
-		return ls;
-	}
+	
 	
 	
 	
@@ -68,7 +34,7 @@ public class RushHourGameSolver {
 	}
 	
 	public boolean backtrack_rec(LinkedList<Movement> moves, HashSet<RushHourGame> visitedStates){
-		LinkedList<Movement> liste = available_moves();
+		LinkedList<Movement> liste = game.available_moves();
 		
 		if (game.vList[0].x + game.vList[0].length == game.size)
 			return true;
@@ -106,24 +72,62 @@ public class RushHourGameSolver {
 	
 	
 	public LinkedList<Movement> bruteforce() {		
-		LinkedList<Movement> moves; 
-		HashSet<RushHourGame> visitedStates;		
+		 
+		HashMap<Integer, Movement> visitedStates;		
 		
 		
-		visitedStates = new HashSet<RushHourGame>();		
-		visitedStates.add(game);				
+		visitedStates = new HashMap<Integer, Movement>();		
+		visitedStates.put(game.hashCode(), new Movement(game.vList[0], 0));		
+		
 		
 		LinkedList<RushHourGame> queue = new LinkedList<RushHourGame>();
-		queue.add(game);
+		queue.add(game.copy());
 		
+		
+		LinkedList<Movement> moves;
 		RushHourGame state;
-		while( !queue.isEmpty()) {
+		RushHourGame tmp = null;
+		boolean found = false;
+		int i=0;
+		
+		while( !queue.isEmpty() && !found) {
 			state = queue.pop();
 			
+			moves = state.available_moves();
+			for (Movement m: moves) {
+				tmp = state.copy();
+				tmp.move_vehicule(m);
+
+				if (!visitedStates.containsKey(tmp.hashCode())) {
+					//Unvisited state
+					visitedStates.put(tmp.hashCode(), m);
+					if (tmp.vList[0].x+tmp.vList[0].length == tmp.size) {
+						found = true;
+						break;
+					}
+					queue.add(tmp);
+						
+				}
+			}		
 		}
 		
+		//tmp contains the final state
 		
-		return null;				
+		//Reconstruct solution
+		LinkedList<Movement> solution = new LinkedList<Movement>();
+		
+		Movement m;
+		do {
+			m = visitedStates.get(tmp.hashCode());
+			m.reverse();
+			tmp.move_vehicule(m);
+			m.reverse();
+			solution.addFirst(m);
+		} while(m.value != 0);
+		
+		solution.removeFirst();
+			
+		return solution;				
 		
 	}
 }

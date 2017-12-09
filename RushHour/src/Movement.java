@@ -1,15 +1,19 @@
 
 public class Movement {
-	public Vehicule vehicule;
+	public int id;
 	public int value;
 	
 	public Movement(Vehicule v, int value){
-		this.vehicule = v;
+		this.id = v.id;
 		this.value = value;
+	}
+	
+	public void reverse() {
+		this.value*= -1;
 	}
 	
 	
 	public String toString() {
-		return "Vehicule "+vehicule.id+" : " + this.value;
+		return "Vehicule "+id+" : " + this.value;
 	}
 }

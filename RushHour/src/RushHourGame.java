@@ -18,6 +18,24 @@ public class RushHourGame {
 		graph = new RushHourGraphics(this);
 	}
 	
+	public RushHourGame(RushHourGame game) {
+		this.board = new int[game.size][];
+		
+		for (int i=0; i<game.size; i++)
+			this.board[i] = game.board[i].clone();
+		
+		this.vList = new Vehicule[game.nbVehicules];
+		
+		Vehicule v;
+		for (int i=0; i<game.nbVehicules; i++) {
+			v = game.vList[i];				
+			this.vList[i] = new Vehicule(v.id, v.orientation,v.length, v.x, v.y);
+		}
+		
+		this.size = game.size;
+		this.nbVehicules = game.nbVehicules;
+	}
+	
 	
 	public boolean loadFromFile(String filename) {
 		/*
@@ -102,16 +120,51 @@ public class RushHourGame {
 	
 	public String toString() {
 		String s;
-		s = "Size : " + size + "\nNb vehicules: " + nbVehicules;
+		s = "Size : " + size + "\nNb vehicules: " + nbVehicules + "\nHash: "+this.hashCode();
 		
 		return s;
 	}
 	
-	
+	public LinkedList<Movement> available_moves(){
+		/*
+		 * Compute all possible moves from a game state
+		 */
+		
+		LinkedList<Movement> ls= new LinkedList<Movement>();
+		int p,n;
+			
+		for (Vehicule v : vList){
+			if(v.orientation==0){
+				p=0;
+				while(v.x+v.length+p<size && board[v.x+v.length+p][v.y]==-1){
+					p++;
+					ls.add(new Movement(v,p));
+				}
+				n=0;
+				while(v.x-1-n>=0 && board[v.x-1-n][v.y]==-1){
+					n++;
+					ls.add(new Movement(v,-n));
+				}			
+			}
+			else{
+				p=0;
+				while(v.y+v.length+p<size && board[v.x][v.y+v.length+p]==-1){
+					p++;
+					ls.add(new Movement(v,p));
+				}
+				n=0;
+				while(v.y-1-n>=0 && board[v.x][v.y-1-n]==-1){
+					n++;
+					ls.add(new Movement(v,-n));
+				}
+			}
+		}
+		return ls;
+	}
 	
 	public void move_vehicule(Movement m){ 
-		int id = m.vehicule.id;
-		Vehicule v = m.vehicule;
+		int id = m.id;
+		Vehicule v = this.vList[id];
 		
 		//Move vehicule on the board
 		if(v.orientation==0){ 
@@ -180,6 +233,15 @@ public class RushHourGame {
         		hash += v.y;
         	
         }
+        
         return hash; 
+	}
+	
+	
+	
+	
+	public RushHourGame copy() {
+		RushHourGame cp = new RushHourGame(this);
+		return cp;
 	}
 }
