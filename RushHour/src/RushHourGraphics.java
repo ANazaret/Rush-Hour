@@ -4,10 +4,10 @@ import java.awt.Graphics;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-public class RushHourInterface extends JFrame {
+public class RushHourGraphics extends JFrame {
 	private RushHourGame game;
 	
-	public RushHourInterface(RushHourGame game) {
+	public RushHourGraphics(RushHourGame game) {
 		this.game = game;
 		
 		

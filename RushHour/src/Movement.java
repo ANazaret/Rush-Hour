@@ -4,7 +4,7 @@ public class Movement {
 	public int value;
 	
 	public Movement(Vehicule v, int value){
-		this.vehicule=v;
-		this.value=value;
+		this.vehicule = v;
+		this.value = value;
 	}
 }

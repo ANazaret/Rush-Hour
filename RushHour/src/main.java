@@ -14,7 +14,7 @@ public class main {
 		System.out.println(game.isValid());
 		
 		System.out.println(game);
-		RushHourInterface graph = new RushHourInterface(game);
+		RushHourGraphics graph = new RushHourGraphics(game);
 		
 		Thread.sleep(1000);
 		

@@ -9,46 +9,19 @@ public class RushHourGame {
 	public int nbVehicules;
 	public Vehicule[] vList;
 	public int[][] board;
-	public Movement lastmove; //celui qui nous a conduit à cet état 
+	
+	public LinkedList<Movement> moves; 
 	
 	public RushHourGame(String filename){
 		loadFromFile(filename);
-	}
-	
-	public boolean isValid(){
-		if(size==0){
-			return false;
-		}
-		for(Vehicule v : vList){
-			if(v.x<0 || v.y<0 || (v.orientation==0 && v.x+v.length>size) || (v.orientation==1 && v.y+v.length>size)){
-				return false;
-			}
-			if(v.orientation==0){
-				for (int j=0;j<v.length;j++){
-					if(board[v.x+j][v.y]!=-1){
-						return false;
-					}
-					else{ 
-						board[v.x+j][v.y]=v.id;
-					}
-				}
-			}
-			else{
-				for (int j=0;j<v.length;j++){
-					if(board[v.x][v.y+j]!=-1){
-						return false;
-					}
-					else{ 
-						board[v.x][v.y+j]=v.id;
-					}
-				}
-			}
-		}
-		return true;
+		isValid();
 	}
 	
 	
 	public boolean loadFromFile(String filename) {
+		/*
+		 * Initialize the RushHourGame from file
+		 */
 		
 		FileReader fr = null;
 		BufferedReader br = null;
@@ -57,18 +30,20 @@ public class RushHourGame {
 			fr = new FileReader(filename);
 			br = new BufferedReader(fr);
 		
-		
-			String line;		
-		
-			size = Integer.valueOf(br.readLine());
-			board= new int[size][size];
-			for (int i=0;i<size;i++){
-				for (int j=0;j<size;j++){
-					board[i][j]=-1; //la valeur du vide sera -1
-				}
-			}
-			nbVehicules = Integer.valueOf(br.readLine());
+			String line;	
 			
+			//First Line : Size of the grid 
+			this.size = Integer.valueOf(br.readLine());
+			this.board= new int[size][size];
+			
+			//Fill in with -1 (no car)
+			for (int i=0;i<size;i++)
+				for (int j=0;j<size;j++)
+					board[i][j]=-1; 
+				
+			
+			//Second line : Nb of vehicules
+			nbVehicules = Integer.valueOf(br.readLine());			
 			vList = new Vehicule[nbVehicules];
 			
 			for (int i=0; i<nbVehicules; i++ ) {
@@ -86,6 +61,44 @@ public class RushHourGame {
 	}
 	
 	
+	
+	public boolean isValid(){
+		/*
+		 * Check that the RushHourGame is Valid AND fill in the board
+		 * 
+		 * - Size > 0
+		 * - Each vehicule fits in the grid
+		 * - No overlap
+		 * 
+		 */
+		
+		if(size==0)	return false;
+		
+		for(Vehicule v : vList){
+			if(v.x<0 || v.y<0 || (v.orientation==0 && v.x+v.length>size) || (v.orientation==1 && v.y+v.length>size))	
+				return false;
+			
+			if(v.orientation==0){
+				for (int j=0;j<v.length;j++){
+					if(board[v.x+j][v.y] != -1)
+						return false;
+					else 
+						board[v.x+j][v.y]=v.id;
+				}
+			}
+			else {
+				for (int j=0;j<v.length;j++){
+					if(board[v.x][v.y+j] != -1)
+						return false;
+					else
+						board[v.x][v.y+j]=v.id;
+				}
+			}
+		}
+		return true;
+	}
+	
+	
 	public String toString() {
 		String s;
 		s = "Size : " + size + "\nNb vehicules: " + nbVehicules;
@@ -93,6 +106,7 @@ public class RushHourGame {
 		return s;
 	}
 	
+	/*
 	public void update(Movement m){ //met à joue à la fois vList et board
 		int id= m.vehicule.id;
 		if(this.vList[id].orientation==0){ //mouv horizontal
@@ -165,5 +179,5 @@ public class RushHourGame {
 		}
 		return ls;
 	}
-		
+		*/
 }
