@@ -16,10 +16,12 @@ public class main {
 		System.out.println(game);
 		RushHourGraphics graph = new RushHourGraphics(game);
 		
-		Thread.sleep(1000);
+		System.out.print(game.available_moves());
 		
-		game.vList[0].moveNoCheck(2);
-		graph.repaint();
+		//Thread.sleep(1000);
+		
+		//game.vList[0].moveNoCheck(2);
+		//graph.repaint();
 	}
 
 	

@@ -7,4 +7,9 @@ public class Movement {
 		this.vehicule = v;
 		this.value = value;
 	}
+	
+	
+	public String toString() {
+		return "Vehicule "+vehicule.id+" : " + this.value;
+	}
 }

@@ -1,4 +1,5 @@
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 
 import javax.swing.JFrame;
@@ -57,17 +58,23 @@ class Board extends JPanel{
 		
 		
 		int color_index = 0;
+		g.setFont(new Font("TimesRoman", Font.PLAIN, Integer.min(interH, interW))); 
 				
 		for (Vehicule v : game.vList) {
 			if (color_index >= colors.length)
 				color_index = 1;
+			
+			
 			
 			g.setColor(Board.colors[color_index]);
 			
 			if (v.orientation == 0) 
 				g.fillRect( v.x*interW,  v.y*interH ,v.length*interW ,interH);				
 			else
-				g.fillRect( v.x*interW,  v.y*interH ,interW ,v.length*interH);	
+				g.fillRect( v.x*interW,  v.y*interH ,interW ,v.length*interH);
+			
+			g.setColor(Color.BLACK);
+			g.drawString(""+v.id, v.x*interW + interW/4, v.y*interH +interH*3/4);
 			
 			color_index ++;
 		}

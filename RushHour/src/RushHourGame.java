@@ -11,6 +11,7 @@ public class RushHourGame {
 	public int[][] board;
 	
 	public LinkedList<Movement> moves; 
+	public HashSet<int[][]> visitedStates;
 	
 	public RushHourGame(String filename){
 		loadFromFile(filename);
@@ -106,7 +107,8 @@ public class RushHourGame {
 		return s;
 	}
 	
-	/*
+	
+	
 	public void update(Movement m){ //met à joue à la fois vList et board
 		int id= m.vehicule.id;
 		if(this.vList[id].orientation==0){ //mouv horizontal
@@ -143,41 +145,34 @@ public class RushHourGame {
 	public LinkedList<Movement> available_moves(){
 		LinkedList<Movement> ls= new LinkedList<Movement>();
 		int p,n;
-		for (int i=0;i<this.nbVehicules;i++){
-			if(this.vList[i].orientation==0){
+			
+		for (Vehicule v : vList){
+			if(v.orientation==0){
 				p=0;
-				while(this.board[this.vList[i].x+this.vList[i].length+p][this.vList[i].y]==-1 && this.vList[i].x+this.vList[i].length+p<this.size){
+				while(v.x+v.length+p<this.size && this.board[v.x+v.length+p][v.y]==-1){
 					p++;
+					ls.add(new Movement(v,p));
 				}
 				n=0;
-				while(this.board[this.vList[i].x-1-n][this.vList[i].y]==-1 && this.vList[i].x-1-n>0){
+				while(v.x-1-n>=0 && this.board[v.x-1-n][v.y]==-1){
 					n++;
-				}
-				for(int j=1;j<=p;j++){
-					ls.add(new Movement(this.vList[i],j));
-				}
-				for(int j=1;j<=n;j++){
-					ls.add(new Movement(this.vList[i],-j));
-				}
+					ls.add(new Movement(v,-n));
+				}			
 			}
 			else{
 				p=0;
-				while(this.board[this.vList[i].x][this.vList[i].y+this.vList[i].length+p]==-1 && this.vList[i].y+this.vList[i].length+p<this.size){
+				while(v.y+v.length+p<this.size && this.board[v.x][v.y+v.length+p]==-1){
 					p++;
+					ls.add(new Movement(v,p));
 				}
 				n=0;
-				while(this.board[this.vList[i].x][this.vList[i].y-1-n]==-1 && this.vList[i].y-1-n>0){
+				while(v.y-1-n>=0 && this.board[v.x][v.y-1-n]==-1){
 					n++;
-				}
-				for(int j=1;j<=p;j++){
-					ls.add(new Movement(this.vList[i],j));
-				}
-				for(int j=1;j<=n;j++){
-					ls.add(new Movement(this.vList[i],-j));
+					ls.add(new Movement(v,-n));
 				}
 			}
 		}
 		return ls;
 	}
-		*/
+		
 }
