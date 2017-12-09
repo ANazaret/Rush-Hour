@@ -10,12 +10,12 @@ public class RushHourGame {
 	public Vehicule[] vList;
 	public int[][] board;
 	
-	public LinkedList<Movement> moves; 
-	public HashSet<int[][]> visitedStates;
+	public RushHourGraphics graph;
 	
 	public RushHourGame(String filename){
 		loadFromFile(filename);
 		isValid();
+		graph = new RushHourGraphics(this);
 	}
 	
 	
@@ -81,7 +81,7 @@ public class RushHourGame {
 			
 			if(v.orientation==0){
 				for (int j=0;j<v.length;j++){
-					if(board[v.x+j][v.y] != -1)
+					if(board[v.x+j][v.y] != -1 && board[v.x+j][v.y] != v.id)
 						return false;
 					else 
 						board[v.x+j][v.y]=v.id;
@@ -89,7 +89,7 @@ public class RushHourGame {
 			}
 			else {
 				for (int j=0;j<v.length;j++){
-					if(board[v.x][v.y+j] != -1)
+					if(board[v.x][v.y+j] != -1 && board[v.x][v.y+j] != v.id)
 						return false;
 					else
 						board[v.x][v.y+j]=v.id;
@@ -109,70 +109,77 @@ public class RushHourGame {
 	
 	
 	
-	public void update(Movement m){ //met à joue à la fois vList et board
-		int id= m.vehicule.id;
-		if(this.vList[id].orientation==0){ //mouv horizontal
+	public void move_vehicule(Movement m){ 
+		int id = m.vehicule.id;
+		Vehicule v = m.vehicule;
+		
+		//Move vehicule on the board
+		if(v.orientation==0){ 
+			//Horizontal move
 			if(m.value>=0){
-				for (int i=0;i<m.value;i++){ //on doit séparer deux cas car la boucle for ne comprend pas de 0 à x neg
-					this.board[this.vList[id].x+i][this.vList[id].y]=-1;
-					this.board[this.vList[id].x+this.vList[id].length+i][this.vList[id].y]=id;
-				}
+				//We erase on the left of the vehicule
+				for (int i=0;i<Math.min(m.value, v.length);i++)
+					this.board[v.x+i][v.y]=-1;
+				
+				//We write on the right
+				for (int i=0;i<Math.min(m.value, v.length);i++)
+					this.board[v.x+m.value+v.length-1-i][v.y] = id;
+				
 			}
-			else{
-				for (int i=1;i<-m.value;i++){
-					this.board[this.vList[id].x-i][this.vList[id].y]=id;
-					this.board[this.vList[id].x+this.vList[id].length-i][this.vList[id].y]=-1;
-				}
+			else
+			{
+				
+				//Erase the right
+				for (int i=0;i<Math.min(-m.value, v.length);i++)
+					this.board[v.x+v.length-1-i][v.y]=-1;
+				
+				//We write on the left
+				for (int i=0;i<Math.min(-m.value, v.length);i++)
+					this.board[v.x+m.value+i][v.y] = id;
+				
 			}
 		}
-		else{  //vertical
+		else{  
+			//Vertical move
 			if(m.value>=0){
-				for (int i=0;i<m.value;i++){
-					this.board[this.vList[id].x][this.vList[id].y+i]=-1;
-					this.board[this.vList[id].x][this.vList[id].y+this.vList[id].length+i]=id;
-				}
+				//We erase on the top of the vehicule
+				for (int i=0;i<Math.min(m.value, v.length);i++)
+					this.board[v.x][v.y+i]=-1;
+				
+				//We write on the bottom
+				for (int i=0;i<Math.min(m.value, v.length);i++)
+					this.board[v.x][v.y+m.value+v.length-1-i] = id;
+				
 			}
-			else{
-				for (int i=1;i<-m.value;i++){
-					this.board[this.vList[id].x][this.vList[id].y-i]=id;
-					this.board[this.vList[id].x][this.vList[id].y+this.vList[id].length-i]=-1;
-				}
-			}	
+			else
+			{
+				for (int i=0;i<Math.min(-m.value, v.length);i++)
+					this.board[v.x][v.y+v.length-1-i]=-1;
+				
+				for (int i=0;i<Math.min(-m.value, v.length);i++)
+					this.board[v.x][v.y+m.value+i] = id;
+				
+			}			
 		}
-		this.vList[id].y+=m.value;
+		
+		//Move vehicule coordinates
+		v.move(m.value);
 	}
 	
-	public LinkedList<Movement> available_moves(){
-		LinkedList<Movement> ls= new LinkedList<Movement>();
-		int p,n;
-			
-		for (Vehicule v : vList){
-			if(v.orientation==0){
-				p=0;
-				while(v.x+v.length+p<this.size && this.board[v.x+v.length+p][v.y]==-1){
-					p++;
-					ls.add(new Movement(v,p));
-				}
-				n=0;
-				while(v.x-1-n>=0 && this.board[v.x-1-n][v.y]==-1){
-					n++;
-					ls.add(new Movement(v,-n));
-				}			
-			}
-			else{
-				p=0;
-				while(v.y+v.length+p<this.size && this.board[v.x][v.y+v.length+p]==-1){
-					p++;
-					ls.add(new Movement(v,p));
-				}
-				n=0;
-				while(v.y-1-n>=0 && this.board[v.x][v.y-1-n]==-1){
-					n++;
-					ls.add(new Movement(v,-n));
-				}
-			}
-		}
-		return ls;
+	
+	@Override
+    public int hashCode() {
+        int hash = 0;
+        
+        for (Vehicule v: vList) {
+        	hash *= size;
+        	
+        	if (v.orientation == 0)
+        		hash += v.x;
+        	else
+        		hash += v.y;
+        	
+        }
+        return hash; 
 	}
-		
 }

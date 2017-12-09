@@ -26,8 +26,8 @@ public class Vehicule {
 		
 	}
 	
-	public void moveNoCheck(int nb_cells) {
-		//Move the car without checking if the cell is free and in board
+	public void move(int nb_cells) {
+		//Move the car
 		
 		if (orientation == 0)
 			x += nb_cells;
