@@ -1,3 +1,4 @@
+package RushHour;
 
 public class Movement {
 	public int id;
@@ -8,8 +9,13 @@ public class Movement {
 		this.value = value;
 	}
 	
-	public void reverse() {
-		this.value*= -1;
+	public Movement(int id, int value){
+		this.id = id;
+		this.value = value;
+	}
+	
+	public Movement reverse() {
+		return new Movement(this.id, -this.value);
 	}
 	
 	

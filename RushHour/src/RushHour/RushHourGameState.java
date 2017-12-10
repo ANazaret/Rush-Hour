@@ -1,3 +1,4 @@
+package RushHour;
 
 public class RushHourGameState {
 	public Vehicule[] vList;

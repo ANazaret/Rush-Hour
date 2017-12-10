@@ -1,3 +1,4 @@
+package RushHour;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -120,7 +121,7 @@ public class RushHourGame {
 	
 	public String toString() {
 		String s;
-		s = "Size : " + size + "\nNb vehicules: " + nbVehicules + "\nHash: "+this.hashCode();
+		s = "Size : " + size + "\nNb vehicules: " + nbVehicules + "\nHashCode: "+this.hashCode() + "\nHashString: " + this.hashString();
 		
 		return s;
 	}
@@ -222,9 +223,15 @@ public class RushHourGame {
 	
 	@Override
     public int hashCode() {
+		/*
+		 * Hashcode of the car position (since the car can only move along one axis, the hash is easy)
+		 */
         int hash = 0;
+        Vehicule v;
         
-        for (Vehicule v: vList) {
+        for (int i=0; i<nbVehicules; i++) {
+        	v = vList[i];
+        	
         	hash *= size;
         	
         	if (v.orientation == 0)
@@ -238,9 +245,53 @@ public class RushHourGame {
 	}
 	
 	
+	public String hashString() {
+		String hash = "";
+		for (Vehicule v: vList) {
+			if (v.orientation == 0)
+				hash+=String.valueOf(v.x)+"#";
+        	else
+        		hash+=String.valueOf(v.y)+"#";
+		}
+		
+		return hash;
+	}
+	
+	public void init_from_hash(String hash) {
+		//To speed up this function, we do not check if the board is valid
+		int i, j, position;
+		Vehicule v;
+		//Reset the board
+		for(i=0; i<size; i++)
+			for(j=0; j<size; j++)
+				board[i][j] = -1;
+		
+		String[] positions = hash.split("#");
+		
+		//Read vehicules positions from the hash
+		for(i=0; i<nbVehicules; i++) {
+			position = Integer.valueOf(positions[i]);
+						
+			v = vList[i];
+			
+			if (v.orientation == 0) {
+				v.x = position;
+				for (j=0;j<v.length;j++)
+					board[v.x+j][v.y]=v.id;
+			}				
+			else {
+				v.y = position;
+				for (j=0;j<v.length;j++)
+					board[v.x][v.y+j]=v.id;
+			}			
+		}				
+	}
 	
 	
 	public RushHourGame copy() {
+		/*
+		 * Return a deepcopy of the class
+		 */
 		RushHourGame cp = new RushHourGame(this);
 		return cp;
 	}

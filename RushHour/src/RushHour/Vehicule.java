@@ -1,3 +1,4 @@
+package RushHour;
 
 public class Vehicule {
 	public int id;
