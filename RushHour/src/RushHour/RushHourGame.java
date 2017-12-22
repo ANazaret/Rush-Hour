@@ -99,7 +99,7 @@ public class RushHourGame {
 				return false;
 			
 			if(v.orientation==0){
-				for (int j=0;j<v.length;j++){
+				for (int j=0;j<v.length;j++) {
 					if(board[v.x+j][v.y] != -1 && board[v.x+j][v.y] != v.id)
 						return false;
 					else 
@@ -285,8 +285,7 @@ public class RushHourGame {
 					board[v.x][v.y+j]=v.id;
 			}			
 		}				
-	}
-	
+	}	
 	
 	public RushHourGame copy() {
 		/*

@@ -58,8 +58,15 @@ public class main {
 		
 		System.out.print(li.size());
 		
+		time = System.currentTimeMillis();			
+		for (int i=0; i<100; i++)
+			li = solver.bruteforce();
+		
+		System.out.println("DFS time :" +(System.currentTimeMillis() - time) +" States visited : " +solver.number_of_states_explored);
+		
+		
 		for (Movement m : li) {
-			Thread.sleep(50);
+			Thread.sleep(300);
 			game.move_vehicule(m);
 			game.graph.repaint();		
 			

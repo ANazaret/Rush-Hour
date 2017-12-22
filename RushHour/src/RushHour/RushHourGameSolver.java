@@ -58,12 +58,12 @@ public class RushHourGameSolver {
 				//Check if next_state has already been visited
 				if (!visitedStates.containsKey(next_state.hashCode())) {
 					visitedStates.put(next_state.hashCode(), m);
+					//Check if red car is free
 					if (next_state.vList[0].x+next_state.vList[0].length == next_state.size) {
 						found = true;
 						break;
 					}
-					queue.add(next_state);
-						
+					queue.add(next_state);						
 				}
 			}		
 		}
