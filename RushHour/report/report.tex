@@ -1,0 +1,156 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{algorithmic}
+\usepackage{algorithm}
+\usepackage[left=2cm,right=2cm,top=2cm,bottom=2cm]{geometry}
+
+\author{Achille Nazaret - Jeremie Klinger}
+\title{RushHour Game Solver}
+
+
+\begin{document}
+\maketitle
+
+Please have a look at the README.md to have more details about class structures.
+
+\section{Solver overview}
+
+
+
+The solver consists of 5 classes:
+\begin{enumerate}
+\item RushHourGame: The main class implementing the board
+\item RushHourGameSolver: Solver class which manipulate RushHourGame objects
+\item RushHourGraphic: Fancy graphics class
+\item Movement: Class describing a unique movement (car id and number of cells)
+\item Vehicle: Class describing each vehicle (id, orientation, coordinates)
+\end{enumerate}
+
+In bonus, a generator class is provided to generate custom games.
+
+\section{Brute Force Solution}
+\subsection{Overall description}
+We are using a BFS algorithm to explore all reachable states from the first state $S_i$, until we come to the final state $S_f$ which we identify by the position of the red car.
+
+Neighbors for state $S$ are defined by all states reachable moving only one car (by eventually several cells). If we store these moves, we are able to backtrack easily from final state to initial state and obtain the shortest path.
+
+\subsection{Data structures}
+\begin{itemize}
+\item  \textit{Visited states}: they are stored as keys of a Hashmap which maps the state's haschode to the movement that led to the state. Doing so we have access to the visited states hashes looking up at the hashmap keys.\\
+\item \textit{Backtracking}: In bonus we can reconstruct the sequence of moves that led to the final state by looking sequentially to the hashmap from the final state $S_f$ and applying the opposite movements.\\
+\item \textit{State Hash}: Once we know on which row/column lie each car, only its position on the column/row matters. Thus, each state can be identify by a unique String: Car0Position\#Car1Position\#.... This string is then hashed using java.String.Hash function.\\
+
+\item \textit{Reached states}: The states we have reached and that are waiting to be processed are stored in a \textit{LinkedList} used as a \textbf{queue}.\\
+
+\end{itemize}
+
+
+
+
+\subsection{Brute Force Algorithm}
+
+\begin{algorithm}[H]
+\caption{BFS algorithm}
+\begin{algorithmic}
+\STATE \textbf{INPUT}: initial state $S_i$
+\STATE \textbf{OUTPUT}: List of moves from $S_i$ to $S_f$
+\STATE
+\STATE \textbf{INITALIZE}:
+\STATE boolean \textbf{found}, Hashmap $\textbf{visited}$, LinkedList  $\textbf{Q}$
+\STATE \textbf{found} = false
+\STATE $\textbf{visited} \leftarrow S_i$
+\STATE $\textbf{Q}.add(S_i)$
+\STATE
+
+\WHILE {$\textbf{Q}\neq \varnothing$  and  $\textbf{found} \neq true$}
+\STATE $\textit{S} \leftarrow \textbf{Q}.pop()$
+\FOR{$T \in$ neighbors$(S)$}
+\IF {$T \notin \textbf{visited}$}
+\IF {$T=S_f $}
+\STATE $\textbf{found}\leftarrow true$
+\ENDIF
+\STATE \textbf{visited} = \textbf{visited }$\cup$\textit{ $T$}
+\STATE $\textbf{Q}.add(T)$
+\ENDIF
+\ENDFOR
+\ENDWHILE 
+\STATE
+\STATE Backtrack from $S_f$ to $S_i$
+\end{algorithmic}
+\end{algorithm}
+
+\section{A* algorithm}
+
+We now try to enhance the bruteforce algorithm by orienting the BFS with heuristics. The queue is turned into a PriorityQueue storing pairs of (State, distance from $S_i$)
+The pseudo-code rewrites as follow:
+
+
+
+\begin{algorithm}[H]
+\caption{BFS algorithm}
+\begin{algorithmic}
+\STATE \textbf{INPUT}: initial state $S_i$, Heuristic h
+\STATE \textbf{OUTPUT}: List of moves from $S_i$ to $S_f$
+\STATE
+\STATE \textbf{INITALIZE}:
+\STATE boolean \textbf{found}, Hashmap $\textbf{visited}$, PriorityQueue  $\textbf{Q}$
+\STATE \textbf{found} = false
+\STATE $\textbf{visited} \leftarrow S_i$
+\STATE $\textbf{Q}.add(state=(S_i,0),priority=h(S_i))$
+\STATE
+
+\WHILE {$\textbf{Q}\neq \varnothing$  and  $\textbf{found} \neq true$}
+\STATE ($\textit{S},d) \leftarrow \textbf{Q}.pop()$
+\FOR{$T \in$ neighbors$(S)$}
+\IF {$T \notin \textbf{visited}$}
+\IF {$T=S_f $}
+\STATE $\textbf{found}\leftarrow true$
+\ENDIF
+\STATE \textbf{visited} = \textbf{visited }$\cup$\textit{ $T$}
+\STATE $\textbf{Q}.add((T, d+1), priority=h(T)+d+1)$
+\ENDIF
+\ENDFOR
+\ENDWHILE 
+\STATE
+\STATE Backtrack from $S_f$ to $S_i$
+\end{algorithmic}
+\end{algorithm}
+
+
+\section{Heuristics}
+
+Here we described several heuristics.
+
+\subsection{Trivial heuristic}
+A trivial consistent heuristic is given by the function 
+\[h = 0\]
+
+Using this heuristic is equivalent to execute the depth-first-search algorithm as we did before.
+
+
+\subsection{Blocking cars heuristic}
+A better heuristic is to associate to a game state the number of cars between the red car and the exit. The \textit{blockingcars} heuristic is obviously \textit{consistent}: let $(s,s')$ be two distinct states and $(b,b')$ the heuristic value for each state. Then to reach state $s'$ from $s$, the player must move at least $|b - b'|$ cars.
+
+
+\subsection{Move blocking cars heuristic}
+This is a more advanced heuristic which anticipate the possibility to push away the blocking cars is only one move. If one blocking car cannot free the exit road in only one move (if another horizontal car blocks it). Yet the heuristic can be inconsistent as one move can sometimes free two vertical cars.
+
+\subsection{Execution time}
+
+Execution time for both A (bruteforce) and A* algorithms will be discussed further during the oral presentation. Nevertheless, it's worth pointing out that A* is strinkingy faster than A. Using the blockingcar heuristic, the number of states explored is strongly inferior.
+
+
+Other heuristics have not proved their efficiency at all, execution time being close to the brutal execution time, or even worse. As one can only hope when designing heuristic (unproven performance), results have shown how unpredictible they can be.
+
+
+
+
+
+
+
+\end{document}
