@@ -1,7 +1,7 @@
 package Heuristic;
 
 import RushHour.RushHourGame;
-import RushHour.Vehicule;
+import RushHour.Vehicle;
 
 public class MoveBlockingCarsHeuristic implements Heuristic {
 
@@ -17,7 +17,7 @@ public class MoveBlockingCarsHeuristic implements Heuristic {
 		return score;
 	}
 	
-	public int moving_away(Vehicule v, RushHourGame g, int x, int y) {
+	public int moving_away(Vehicle v, RushHourGame g, int x, int y) {
 		boolean before = true, after=true;
 		if (v.orientation == 0) {
 			if (v.length <= y)

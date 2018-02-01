@@ -2,6 +2,7 @@ package RushHour;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.util.LinkedList;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -20,6 +21,19 @@ public class RushHourGraphics extends JFrame {
 		this.setVisible(true);
 		
 		
+	}
+	public void animeMovements(LinkedList<Movement> moves) {
+		animeMovements(moves, 250);
+	}
+	
+	public void animeMovements(LinkedList<Movement> moves, int step_delay) {
+		for (Movement m : moves) {			
+			game.move_vehicle(m);
+			game.graph.repaint();
+			try {
+				Thread.sleep(step_delay);
+			} catch (InterruptedException e) {}
+		}
 	}
 		
 }
@@ -50,22 +64,23 @@ class Board extends JPanel{
 		//Draw grid		
 		//Horizontal
 		for (int i=0; i<=game.size; i++) {
-			g.drawLine(0,i*interH,w,interH*i);
+			g.drawLine(0,i*interH,(w/game.size) * game.size,interH*i);
 		}
 		//Vertical
 		for (int j=0; j<= game.size; j++) {
-			g.drawLine(interW*j,0, interW*j,h);
+			g.drawLine(interW*j,0, interW*j,h/game.size*game.size);
 		}
 		
 		
 		int color_index = 0;
 		g.setFont(new Font("TimesRoman", Font.PLAIN, Integer.min(interH, interW))); 
 				
-		for (Vehicule v : game.vList) {
+		for (Vehicle v : game.vList) {
 			if (color_index >= colors.length)
 				color_index = 1;
 			
-			
+			if (v == null)
+				break;
 			
 			g.setColor(Board.colors[color_index]);
 			

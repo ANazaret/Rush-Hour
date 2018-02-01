@@ -4,7 +4,7 @@ public class Movement {
 	public int id;
 	public int value;
 	
-	public Movement(Vehicule v, int value){
+	public Movement(Vehicle v, int value){
 		this.id = v.id;
 		this.value = value;
 	}
@@ -20,6 +20,6 @@ public class Movement {
 	
 	
 	public String toString() {
-		return "Vehicule "+id+" : " + this.value;
+		return "Vehicle "+id+" : " + this.value;
 	}
 }
